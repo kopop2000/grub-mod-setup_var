@@ -1,0 +1,1 @@
+name: Dummy on: [push] jobs: dummy: runs-on: ubuntu-latest steps: - run: echo "Workflows activated"
