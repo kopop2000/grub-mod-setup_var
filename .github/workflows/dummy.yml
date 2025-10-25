@@ -1,7 +1,26 @@
-name: Dummy
-on: [push]
+name: Build GRUB with setup_var
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
 jobs:
-  dummy:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
-      - run: echo "Workflows activated"
+    - uses: actions/checkout@v2
+      with:
+        repository: datasone/grub-mod-setup_var
+        
+    - name: Build GRUB
+      run: |
+        chmod +x build-grub.sh
+        ./build-grub.sh
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: grub-efi
+        path: grub-bin/
