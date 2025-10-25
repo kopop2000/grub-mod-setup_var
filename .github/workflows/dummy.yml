@@ -14,13 +14,27 @@ jobs:
       with:
         repository: datasone/grub-mod-setup_var
         
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf automake autopoint bison flex gettext git gcc make patch python3 libfreetype6-dev libdevmapper-dev libtool
+        
+    - name: Clone and patch GRUB
+      run: |
+        git clone https://git.savannah.gnu.org/git/grub.git
+        cd grub
+        git apply ../Makefile.core.def.patch
+        patch -p1 < ../setup_var.c ../grub-core/Makefile.core.def
+        
     - name: Build GRUB
       run: |
-        chmod +x build-grub.sh
-        ./build-grub.sh
+        cd grub
+        ./bootstrap
+        ./configure --target=x86_64 --with-platform=efi
+        make
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: grub-efi
-        path: grub-bin/
+        path: grub/grub-core/*.efi
