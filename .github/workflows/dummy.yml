@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: datasone/grub-mod-setup_var
         
@@ -20,7 +20,7 @@ jobs:
         ./build-grub.sh
         
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: grub-efi
         path: grub-bin/
