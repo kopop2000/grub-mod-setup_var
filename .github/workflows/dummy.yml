@@ -1,12 +1,40 @@
-- name: Clone and patch GRUB
-  run: |
-    git clone https://git.savannah.gnu.org/git/grub.git
-    cd grub
-    ./bootstrap
-    cp ../setup_var.c ./grub-core/commands/
-    patch -p1 < ../Makefile.core.def.patch
-- name: Build GRUB
-  run: |
-    cd grub
-    ./configure --target=x86_64 --with-platform=efi
-    make
+name: Build GRUB
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: datasone/grub-mod-setup_var
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf automake autopoint bison flex gettext git gcc make patch python3 libfreetype6-dev libdevmapper-dev libtool
+        
+    - name: Clone and patch GRUB
+      run: |
+        git clone https://git.savannah.gnu.org/git/grub.git
+        cd grub
+        ./bootstrap
+        cp ../setup_var.c ./grub-core/commands/
+        patch -p1 < ../Makefile.core.def.patch
+        
+    - name: Build GRUB
+      run: |
+        cd grub
+        ./configure --target=x86_64 --with-platform=efi
+        make
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: grub-efi
+        path: grub/grub-core/*.efi
